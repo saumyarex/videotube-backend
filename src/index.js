@@ -1,11 +1,11 @@
-import 'dotenv/config';
-import express from 'express';
-import connectDB from './db/connectDB.js';
-import { app } from './app.js';
+import "dotenv/config";
+import express from "express";
+import connectDB from "./db/connectDB.js";
+import { app } from "./app.js";
 
 connectDB()
   .then(() => {
-    app.on('error', (err) => {
+    app.on("error", (err) => {
       console.log(`Server error : ${err}`);
     });
 
@@ -14,5 +14,5 @@ connectDB()
     });
   })
   .catch((error) => {
-    console.log('DB error : ', error);
+    console.log("DB error : ", error);
   });

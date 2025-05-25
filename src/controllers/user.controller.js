@@ -17,15 +17,14 @@ const registerUser = asyncHandler(async (req, res) => {
   //return res
 
   const { fullName, username, email, password } = req.body;
-  console.log("Full Name : ", fullName, "Username : ", username);
 
   if (
-    [fullName, username, email, password].some((field) => field?.trime() === "")
+    [fullName, username, email, password].some((field) => field?.trim() === "")
   ) {
     throw new ApiError(400, "All fields are required");
   }
 
-  const existedUser = User.findOne({
+  const existedUser = await User.findOne({
     $or: [{ username }, { email }],
   });
 
@@ -41,6 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   const avatar = await fileUploadingToCloudinary(avatarLocalPath);
+  console.log(avatar);
   const coverImage = await fileUploadingToCloudinary(coverImageLocalPath);
 
   if (!avatar) {
@@ -56,7 +56,9 @@ const registerUser = asyncHandler(async (req, res) => {
     password,
   });
 
-  const createdUser = User.findById(user._id).select("-password -refreshToken");
+  const createdUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
 
   if (!createdUser) {
     throw new ApiError(500, "Internal Server Error");
