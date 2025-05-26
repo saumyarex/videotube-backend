@@ -97,6 +97,7 @@ const loginUser = asyncHandler(async (req, res) => {
   //send cookies
   //send success response
 
+  //console.log(req.body);
   const { email, username, password } = req.body;
 
   if (!email || !username) {
@@ -106,6 +107,8 @@ const loginUser = asyncHandler(async (req, res) => {
   const userExist = await User.findOne({
     $or: [{ username }, { email }],
   });
+
+  console.log(userExist._id);
 
   if (!userExist) {
     throw new ApiError(404, "User does not exist");
@@ -117,6 +120,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const isPasswordValid = await userExist.isPasswordCorrect(password);
 
+  //console.log(isPasswordValid);
+
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials");
   }
@@ -125,9 +130,11 @@ const loginUser = asyncHandler(async (req, res) => {
     userExist._id
   );
 
-  const loggedInUser = User.findById(userExist._id).select(
+  const loggedInUser = await User.findById(userExist._id).select(
     "-password -refreshToken"
   );
+
+  //console.log(loggedInUser);
 
   const options = {
     httpOnly: true,
@@ -170,7 +177,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options);
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
 export { registerUser, loginUser, logoutUser };
