@@ -284,6 +284,50 @@ const updateUserInfo = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "Account details updated successfull"));
 });
 
+const updateAvatar = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file?.avatar?.[0].path;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Please upload avatar");
+  }
+
+  const avatar = await fileUploadingToCloudinary(avatarLocalPath);
+
+  if (!avatar.url) {
+    throw new ApiError(500, "Error while uploading on avatar");
+  }
+
+  await User.findByIdAndUpdate(req.user?._id, {
+    $set: { avatar: avatar.url },
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Avatar updated successfully"));
+});
+
+const updateCoverImage = asyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file?.coverImage?.[0].path;
+
+  if (!coverImageLocalPath) {
+    throw new ApiError(400, "Please upload cover image");
+  }
+
+  const coverImage = await fileUploadingToCloudinary(coverImageLocalPath);
+
+  if (!coverImage.url) {
+    throw new ApiError(500, "Error while uploading on cover image");
+  }
+
+  await User.findByIdAndUpdate(req.user?._id, {
+    $set: { coverImage: coverImage.url },
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Cover image updated successfully"));
+});
+
 export {
   registerUser,
   loginUser,
@@ -292,4 +336,6 @@ export {
   changeCurrentPassword,
   getCurrentUser,
   updateUserInfo,
+  updateAvatar,
+  updateCoverImage,
 };
