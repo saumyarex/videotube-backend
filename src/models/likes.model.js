@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Tweet } from "./tweet.model";
 
 const likesSchema = new mongoose.Schema(
   {
@@ -12,7 +13,12 @@ const likesSchema = new mongoose.Schema(
       ref: "Video",
     },
 
-    user: {
+    tweet: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Tweet",
+    },
+
+    likedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
